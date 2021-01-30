@@ -1,6 +1,4 @@
 
-
-
 computeAttractor <- function(params,funs,n=1e4,startX){
   X=matrix(NA, nrow=n, ncol=length(startX))
   X[1,] <- startX
@@ -25,11 +23,19 @@ clifford <- function(prev, p){
   )
 }
 
+dejong <- function(prev, p){
+  c(
+    sin(p[1]*prev[2])-cos(p[3]*prev[1]),
+    sin(p[3]*prev[1])-cos(p[4]*prev[2])
+  )
+}
+
+
 lorenz <- function(prev, p){
   c(
     prev[1] +  p[4] * p[1] * (prev[2] - prev[1]),
     prev[2] +  p[4] * (prev[1] * (p[2] - prev[3]) - prev[2]),
-    prev[3] +  p[5] * (prev[1] * prev[2] - p[3] * prev[3])
+    prev[3] +  p[4] * (prev[1] * prev[2] - p[3] * prev[3])
   )
 }
 
@@ -55,7 +61,7 @@ lor1 <- computeAttractor(c(10,28,8/3,.001), lorenz, startX = c(.1,0,0), n=1e4)
 clif1 <- computeAttractor(c(1.77,-2,.45,-.667), clifford, startX = c(0,0)) 
 
 
-X <- matrix(50*runif(500*3)-20, ncol=3)
+X <- matrix(runif(500*3), ncol=3)
 tail <- rep(list(X),22)
 
 bg3d("black")
@@ -82,7 +88,7 @@ for(i in 1:1800){
                     ignoreExtent=TRUE)
   }
   
-  rgl.viewpoint(0, 360*3*i/1800,zoom = .70)
+  rgl.viewpoint(0, 360*3*i/1800,zoom = .80)
   rgl.snapshot(filename = sprintf("pngs/anim%05d.png",i))
   clear3d()
 
