@@ -8,6 +8,51 @@ computeAttractor <- function(params,funs,n=1e4,startX){
   X
 }
 
+imageAttractor <- function(params, funs, n=1e4, startX, xlim=NULL, ylim=NULL, fromImage=NULL, res=NULL){
+  if(is.null(fromImage)) img <- matrix(0, nrow=res, ncol=res) else {img <- fromImage; res <- dim(img)[1]}
+  X <- startX
+#  print(res)
+  for(i in 1:n){
+    X <- funs(prev=X, params)
+    if(abs(X[1]<100) & abs(X[2]<100)){
+      x <- floor(res * (X[1] - xlim[1]) / (xlim[2]-xlim[1]))
+      y <- floor(res * (X[2] - ylim[1]) / (ylim[2]-ylim[1]))
+#      print(x)
+#      print(y)
+    if((x<res) & (y<res) & (x>1) & (y>1))  img[x,y] <- img[x,y]+1
+    } else (X = runif(2))
+  }
+  img
+}
+
+img <- imageAttractor(1.6, 
+                      henon, 
+                      n=1e4, startX =c(runif(1,-.55,-.45), runif(1,.05,.15)),
+                      xlim=c(-0.55,-0.45), ylim=c(0.05,0.15), res=5000)
+for(i in 1:10000){
+  print(i)
+  img <- imageAttractor(1.6, 
+                        henon, 
+                        n=1e5, startX =c(runif(1,-.55,-.45), runif(1,.05,.15)), 
+                        xlim=c(-0.55,-0.45), ylim=c(0.05,0.15), 
+                        fromImage = img)
+
+  }
+
+img <- img / max(img)
+imgr = 1-img
+imgg = (img)^.1
+imgb = (img)
+
+
+#plot(as.cimg(.99^img))
+cimg1 <- as.cimg(c(seq(0,1,l=5000*5000), imgg, 1-imgg), x=5000, y=5000,cc=3)
+cimg2<-HSVtoRGB(cimg1)
+
+
+
+save.image(cimg1, "henon_3.png") 
+shell("henon_3.png")
 iterateAttractor <- function(params,funs,X){
   Y=X
   for(i in 1:(dim(X)[1])) {
@@ -30,7 +75,37 @@ dejong <- function(prev, p){
   )
 }
 
+henon <- function(prev, p){
+  c(
+    prev[1]*cos(p[1]) - (prev[2] - prev[1]^2)*sin(p[1]),
+    prev[1]*sin(p[1]) + (prev[2] - prev[1]^2)*cos(p[1])
+  )
+}
 
+
+#png("henon.png", width=1000, height=1000, type="cairo")
+
+res = 3000
+m <- matrix(1, ncol=res, nrow=res)
+for(i in 1:1000){
+  henon1 <- computeAttractor(1.6, henon, 1e5, runif(2))
+  henon1 <- henon1[abs(henon1[,1])<1 & abs(henon1[,2])<1,]
+  for(i in 1:(dim(henon1)[1])){
+    x <- floor(res/2 + henon1[i,1]*res/2)
+    y <- floor(res/2 + henon1[i,2]*res/2)
+    m[x,y] <- m[x,y]*.97
+  }
+}
+m <- m^3
+img1 <- as.cimg(m)
+plot(img1, xlim=c(0,res), ylim=c(0,res), axes=F, ann=F)
+imager::save.image(img1, "henon1.png")
+shell("henon1.png")
+#plot(henon1, type="p", pch=".", col=hsv(0,0,0,.01))
+gc()
+#dev.off()
+#shell("henon.png")
+m[1:10,1:10]
 lorenz <- function(prev, p){
   c(
     prev[1] +  p[4] * p[1] * (prev[2] - prev[1]),
