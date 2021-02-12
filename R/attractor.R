@@ -68,6 +68,13 @@ clifford <- function(prev, p){
   )
 }
 
+squaredClifford <- function(v, p){
+  c(
+    sin(p[1]*prev[2])+p[3]*cos(p[1]*prev[1]),
+    sin(p[2]*prev[1])+p[4]*cos(p[2]*prev[2])
+  ) 
+}
+
 dejong <- function(prev, p){
   c(
     sin(p[1]*prev[2])-cos(p[3]*prev[1]),
