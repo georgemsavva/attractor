@@ -23,6 +23,14 @@ computeAttractor <- function(params,funs,n=1e4,startX){
   X
 }
 
+findLimits <- function(params, funs, n=1e4,startX){
+  att1 <- computeAttractor(params, funs, n=n, startX)
+  xlim <- 1.1*c(min(att1[-c(1:1000),1]), max(att1[-c(1:1000),1]))
+  ylim <- 1.1*c(min(att1[-c(1:1000),2]), max(att1[-c(1:1000),2]))
+  return(list(xlim,ylim))
+}
+
+
 imageAttractor <- function(params, funs, n=1e4, startX, xlim=NULL, ylim=NULL, fromImage=NULL, res=NULL){
   if(is.null(fromImage)) img <- matrix(0, nrow=res, ncol=res) else {img <- fromImage; res <- dim(img)[1]}
   if(is.null(xlim)){
@@ -44,6 +52,7 @@ imageAttractor <- function(params, funs, n=1e4, startX, xlim=NULL, ylim=NULL, fr
       #      print(x)
       #      print(y)
       if((x<res) & (y<res) & (x>1) & (y>1))  img[x,y] <- img[x,y]+1
+      if(i<10) print(X)
     } else (X = runif(2))
   }
   img
