@@ -65,9 +65,13 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
           X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]);
           X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]);
         }
+        if(mutation==6){
+          X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
+          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+        }
         x = floor(xd * (X[0] - xlim[0]) );
         y = floor(yd * (X[1] - ylim[0]) );
-        out(x,y) = out(x,y)+1  ;
+        if((x>0) & (x<res) & (y>0) & (y<res)) out(x,y) = out(x,y)+1  ;
         if(i<10) printf("x=%0.3f, y=%0.3f\n", X[0], X[1] );
       }
   return out;

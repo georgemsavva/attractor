@@ -1,4 +1,4 @@
-#library(imagerExtra)
+
 library(RColorBrewer)
 library(imager)
 library(Rcpp)
@@ -23,22 +23,34 @@ kingCPP <- imageAttractorCPP(startPos = c(0.1,0.1),
                              p=kingsDream[[1]],
                              xlim=lims[[1]], ylim=lims[[2]])
 
-ramp <- colorRamp(brewer.pal(9, name = "PuBu"))
 
-george1params <- c(1.364845,1.096446,1.920278,1.290250)
-lims <- findLimits(george1params, funs = george, startX=c(0.1,0.1))
+# <- c(1.364845,1.096446,1.920278,1.290250)
+
 lims
-#kingsDream <- list(c(runif(1,1,3),runif(1,1,3),runif(1,0,2),runif(1,0,2)))
+saveRDS(george1, "george1.rds")
+george1 <-readRDS("george1.rds")
+
+pallist <- rownames(subset(brewer.pal.info, category=="seq"))
+
+for(i in 305:400){
+george1params <- round(c(runif(1,1,3),runif(1,1,3),runif(1,-2,2),runif(1,-2,2)),5)
 print(george1params)
+lims <- findLimits(george1params, funs = george2, startX=c(0.5,0.5))
 george1 <- imageAttractorCPP(startPos = c(0.5,0.5), 
-                             n = 1e8, res=4000, 
+                             n = 4e8, res=2000, 
                              p=george1params,
                              xlim=lims[[1]], ylim=lims[[2]],
-                             mutation=5)
-print(kingsDream)
+                             mutation=6)
+ramp <- colorRamp(brewer.pal(9, name = sample(pallist,1)))
 cimg1 <- makeImg(.995^george1, ramp)
-save.image(cimg1, file="george1.png")
-
+cimg1 <- draw_text(cimg1, text=sprintf("GS attractor: a=%0.5f, b=%0.5f, c=%0.5f, d=%0.5f",
+          george1params[1],
+          george1params[2],
+          george1params[3],
+          george1params[4]), x = 20,y=20,fsize = 50, col="white")
+save.image(cimg1, file=sprintf("george%05d.png",i))
+gc()
+}
 
 
 crofterCPP <- imageAttractorCPP(startPos = c(0.1,0.1), 

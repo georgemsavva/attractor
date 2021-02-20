@@ -8,10 +8,17 @@ pickover <- function(prev, p){
 
 george <- function(prev, p){
   c(
-    triangleCPP(p[2]*prev[2])+p[3]*triangleCPP(p[2]*prev[1]),
-    triangleCPP(p[1]*prev[1])+p[4]*triangleCPP(p[2]*prev[1])
+  triangleCPP(p[2]*prev[2])+p[3]*triangleCPP(p[2]*prev[1]),
+  triangleCPP(p[1]*prev[1])+p[4]*triangleCPP(p[1]*prev[2])
   )
 }
+george2 <- function(prev, p){
+  c(
+    triangleCPP(p[2]*prev[2])+p[3]*triangleCPP(p[2]*prev[1]+pi/2),
+    triangleCPP(p[1]*prev[1])+p[4]*triangleCPP(p[1]*prev[2]+pi/2)
+  )
+}
+
 
 lordsDreams <- list(c(-2.905148, -2.030427, 1.440550, 0.703070),
                     c(-2.951292, 1.187750, 0.517396, 1.090625),
@@ -33,8 +40,10 @@ computeAttractor <- function(params,funs,n=1e4,startX){
 
 findLimits <- function(params, funs, n=1e4,startX){
   att1 <- computeAttractor(params, funs, n=n, startX)
-  xlim <- 1.1*c(min(att1[-c(1:1000),1]), max(att1[-c(1:1000),1]))
-  ylim <- 1.1*c(min(att1[-c(1:1000),2]), max(att1[-c(1:1000),2]))
+  xlim <- c(min(att1[,1]), max(att1[,1]))
+  ylim <- c(min(att1[,2]), max(att1[,2]))
+  xlim <- xlim + c(-1,1)*(xlim[2]-xlim[1])*.05
+  ylim <- ylim + c(-1,1)*(ylim[2]-ylim[1])*.05
   return(list(xlim,ylim))
 }
 
