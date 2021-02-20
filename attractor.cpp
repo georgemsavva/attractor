@@ -11,6 +11,16 @@ using namespace Rcpp;
 //   http://gallery.rcpp.org/
 //
 // [[Rcpp::export]]
+double triangleCPP(double x){
+  x = fmod(12*M_PI+x,2*M_PI);
+  if(x<M_PI/2) return x/(M_PI/2);
+  if(x<3*M_PI/2) return 2-(x/(M_PI/2));
+  return (x/(M_PI/2))-4;
+}
+
+
+
+// [[Rcpp::export]]
 NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p, 
                                 int n, int res, NumericVector xlim, NumericVector ylim,
                                 int mutation=0){
@@ -30,6 +40,7 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
       for(int i=0;i<n;i++){
         prev[0]=X[0];
         prev[1]=X[1];
+        if(i<20) Rprintf("x=%0.4f, y=%0.4f\n", prev[0], prev[1]);
         if(mutation==0){
           X[0] = sin(p[1]*prev[1])+p[2]*sin(p[1]*prev[0]);
           X[1] = sin(p[0]*prev[0])+p[3]*sin(p[0]*prev[1]);
@@ -46,6 +57,14 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
           X[0] = abs(sin(p[1]*prev[1]))+pow(sin(p[1]*prev[0]),2);
           X[1] = abs(sin(p[0]*prev[0]))+pow(sin(p[0]*prev[1]),2);
         }
+        if(mutation==4){
+          X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]);
+          X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]);
+        }
+        if(mutation==5){
+          X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]);
+          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]);
+        }
         x = floor(xd * (X[0] - xlim[0]) );
         y = floor(yd * (X[1] - ylim[0]) );
         out(x,y) = out(x,y)+1  ;
@@ -53,3 +72,5 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
       }
   return out;
 }
+
+

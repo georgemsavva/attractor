@@ -6,6 +6,13 @@ pickover <- function(prev, p){
   )
 }
 
+george <- function(prev, p){
+  c(
+    triangleCPP(p[2]*prev[2])+p[3]*triangleCPP(p[2]*prev[1]),
+    triangleCPP(p[1]*prev[1])+p[4]*triangleCPP(p[2]*prev[1])
+  )
+}
+
 lordsDreams <- list(c(-2.905148, -2.030427, 1.440550, 0.703070),
                     c(-2.951292, 1.187750, 0.517396, 1.090625),
                     c(2.668752, 1.225105, 0.709998, 0.637272),
@@ -31,12 +38,6 @@ findLimits <- function(params, funs, n=1e4,startX){
   return(list(xlim,ylim))
 }
 
-n7library(imager)
-library(tictoc)
-library(viridis)
-library(RColorBrewer)
-
-
 
 makeImg <- function(m, palette, fun=identity){
   nc = ncol(m)
@@ -46,7 +47,6 @@ makeImg <- function(m, palette, fun=identity){
   as.cimg(c(rgbs[,1],rgbs[,2],rgbs[,3]) , x=nc, y=nr, cc=3)
 }
 
-cimg1 <- makeImg(.999^kingCPP, viridsRamp)
-
-save.image(cimg1, file="testMap.png")
+#cimg1 <- makeImg(.999^kingCPP, viridsRamp)
+#save.image(cimg1, file="testMap.png")
 

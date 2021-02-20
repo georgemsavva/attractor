@@ -1,6 +1,10 @@
-library(imagerExtra)
+#library(imagerExtra)
 library(RColorBrewer)
 library(imager)
+library(Rcpp)
+
+source("attractor3.R")
+sourceCpp("attractor.cpp")
 
 ## Example script that uses the package:
 
@@ -13,23 +17,43 @@ lordsDreams <- list(c(-2.905148, -2.030427, 1.440550, 0.703070),
 kingsDream <- list(c(-0.966918, 2.879879, 0.765145, 0.744728))
 crofters <- list(c(2.755364, 2.791253,0,0))
 
-
 lims <- findLimits(kingsDream[[1]], funs = pickover, startX=c(0.1,0.1))
-
 kingCPP <- imageAttractorCPP(startPos = c(0.1,0.1), 
-                             n = 1e9, res=4000, 
+                             n = 1e7, res=4000, 
                              p=kingsDream[[1]],
-                             xlim=lims[[2]], ylim=lims[[1]])
+                             xlim=lims[[1]], ylim=lims[[2]])
+
+ramp <- colorRamp(brewer.pal(9, name = "PuBu"))
+
+george1params <- c(1.364845,1.096446,1.920278,1.290250)
+lims <- findLimits(george1params, funs = george, startX=c(0.1,0.1))
+lims
+#kingsDream <- list(c(runif(1,1,3),runif(1,1,3),runif(1,0,2),runif(1,0,2)))
+print(george1params)
+george1 <- imageAttractorCPP(startPos = c(0.5,0.5), 
+                             n = 1e8, res=4000, 
+                             p=george1params,
+                             xlim=lims[[1]], ylim=lims[[2]],
+                             mutation=5)
+print(kingsDream)
+cimg1 <- makeImg(.995^george1, ramp)
+save.image(cimg1, file="george1.png")
+
+
 
 crofterCPP <- imageAttractorCPP(startPos = c(0.1,0.1), 
                              n = 1e9, res=4000, 
                              p=crofters[[1]],
                              xlim=c(-1.1,2.2), ylim=c(-1.1,2.2), mutation = 2)
+
 saveRDS(crofterCPP, "crofterCPP.rds")
 crofterCPP <- readRDS("crofterCPP.rds")
 ramp <- colorRamp(brewer.pal(9, name = "PuBu"))
 
 cimg1 <- makeImg(.995^crofterCPP, ramp)
+save.image(cimg1, file="testMap.png")
+
+cimg1 <- makeImg(kingCPP2>0, ramp)
 save.image(cimg1, file="testMap.png")
 
 
