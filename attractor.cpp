@@ -12,13 +12,14 @@ using namespace Rcpp;
 //
 // [[Rcpp::export]]
 NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p, 
-                                int n, int res, NumericVector xlim, NumericVector ylim){
+                                int n, int res, NumericVector xlim, NumericVector ylim,
+                                int mutation=0){
   
   NumericMatrix out(res, res);
   double xd;
   double yd;
   int x;
-    int y;
+  int y;
   
   NumericVector X(2);
   X = startPos;
@@ -26,13 +27,25 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
   xd = res/(xlim(1)-xlim(0)); 
   yd = res/(ylim(1)-ylim(0)); 
   
-  printf("%0.3f",xd);
-    
       for(int i=0;i<n;i++){
         prev[0]=X[0];
         prev[1]=X[1];
-        X[0] = sin(p[0]*prev[1])+p[2]*sin(p[0]*prev[0]);
-        X[1] = sin(p[1]*prev[0])+p[3]*sin(p[1]*prev[1]);
+        if(mutation==0){
+          X[0] = sin(p[1]*prev[1])+p[2]*sin(p[1]*prev[0]);
+          X[1] = sin(p[0]*prev[0])+p[3]*sin(p[0]*prev[1]);
+        }
+        if(mutation==1){
+          X[0] = sin(p[1]*prev[1])+pow(sin(p[1]*prev[0]),2)+pow(sin(p[1]*prev[0]),3);
+          X[1] = sin(p[0]*prev[0])+pow(sin(p[0]*prev[1]),2)+pow(sin(p[0]*prev[1]),3);
+        }
+        if(mutation==2){
+          X[0] = sin(p[1]*prev[1])+pow(sin(p[1]*prev[0]),2);
+          X[1] = sin(p[0]*prev[0])+pow(sin(p[0]*prev[1]),2);
+        }
+        if(mutation==3){
+          X[0] = abs(sin(p[1]*prev[1]))+pow(sin(p[1]*prev[0]),2);
+          X[1] = abs(sin(p[0]*prev[0]))+pow(sin(p[0]*prev[1]),2);
+        }
         x = floor(xd * (X[0] - xlim[0]) );
         y = floor(yd * (X[1] - ylim[0]) );
         out(x,y) = out(x,y)+1  ;
@@ -40,19 +53,3 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
       }
   return out;
 }
-
-
-// You can include R code blocks in C++ files processed with sourceCpp
-// (useful for testing and development). The R code will be automatically 
-// run after the compilation.
-//
-
-/*** R
-library(imager)
-kingCPP <- imageAttractorCPP(startPos = c(0.1,0.1), n = 1e9, res=4000, p=lordsDreams[[3]],
-                    xlim=3*c(-1,1), ylim=3*c(-1,1))
-img1 <- as.cimg(.999^kingCPP)
-save.image(img1,"kingcpp1.png")
- 
-
-*/
