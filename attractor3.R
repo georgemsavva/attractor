@@ -6,6 +6,26 @@ pickover <- function(prev, p){
   )
 }
 
+georgeM3 <- function(prev, p){
+  c(
+    # X[0] = abs(sin(p[1]*prev[1]))+pow(sin(p[1]*prev[0]),2);
+    #X[1] = abs(sin(p[0]*prev[0]))+pow(sin(p[0]*prev[1]),2);
+    abs(sin(p[1]*prev[2]))+p[3]*sin(p[1]*prev[1])^2,
+    abs(sin(p[2]*prev[1]))+p[4]*sin(p[2]*prev[2])^2
+  )
+}
+
+georgeM2 <- function(prev, p){
+  c(
+    #X[0] = sin(p[1]*prev[1])+pow(sin(p[1]*prev[0]),2);
+    #X[1] = sin(p[0]*prev[0])+pow(sin(p[0]*prev[1]),2);
+    (sin(p[2]*prev[2]))+sin(p[2]*prev[1])^2,
+    (sin(p[1]*prev[1]))+sin(p[1]*prev[2])^2
+  )
+}
+
+
+
 george <- function(prev, p){
   c(
   triangleCPP(p[2]*prev[2])+p[3]*triangleCPP(p[2]*prev[1]),
@@ -18,6 +38,38 @@ george2 <- function(prev, p){
     triangleCPP(p[1]*prev[1])+p[4]*triangleCPP(p[1]*prev[2]+pi/2)
   )
 }
+george3 <- function(prev, p){
+  c(
+    sin(p[2]*prev[2])+p[3]*sin(p[2]*prev[1]+pi/2),
+    triangleCPP(p[1]*prev[1])+p[4]*triangleCPP(p[1]*prev[2]+pi/2)
+  )
+}
+george12 <- function(prev, p){
+  c(
+    sin(p[2]*prev[2])+p[3]*sawtoothCPP(p[2]*prev[1]+pi/2),
+    sawtoothCPP(p[1]*prev[1])+p[4]*sawtoothCPP(p[1]*prev[2]+pi/2)
+  )
+}
+
+george9 <- function(prev, p){
+  c(
+    sin(p[2]*prev[2])+p[3]*triangleCPP(p[2]*prev[1]+pi/2),
+    sin(p[1]*prev[1])+p[4]*triangleCPP(p[1]*prev[2]+pi/2)
+  )
+}
+george10 <- function(prev, p){
+  c(
+    sawtoothCPP(p[2]*prev[2])+p[3]*sawtoothCPP(p[2]*prev[1]+pi/2),
+    sawtoothCPP(p[1]*prev[1])+p[4]*sawtoothCPP(p[1]*prev[2]+pi/2)
+  )
+}
+george11 <- function(prev, p){
+  c(
+    sawtoothCPP(p[2]*prev[2])+p[3]*sawtoothCPP(p[2]*prev[1]+pi/2),
+    triangleCPP(p[1]*prev[1])+p[4]*triangleCPP(p[1]*prev[2]+pi/2)
+  )
+}
+
 
 
 lordsDreams <- list(c(-2.905148, -2.030427, 1.440550, 0.703070),
@@ -38,12 +90,12 @@ computeAttractor <- function(params,funs,n=1e4,startX){
   X
 }
 
-findLimits <- function(params, funs, n=1e4,startX){
+findLimits <- function(params, funs, n=1e4,startX, extend=0.1){
   att1 <- computeAttractor(params, funs, n=n, startX)
   xlim <- c(min(att1[,1]), max(att1[,1]))
   ylim <- c(min(att1[,2]), max(att1[,2]))
-  xlim <- xlim + c(-1,1)*(xlim[2]-xlim[1])*.05
-  ylim <- ylim + c(-1,1)*(ylim[2]-ylim[1])*.05
+  xlim <- xlim + c(-1,1)*(xlim[2]-xlim[1])*extend
+  ylim <- ylim + c(-1,1)*(ylim[2]-ylim[1])*extend
   return(list(xlim,ylim))
 }
 

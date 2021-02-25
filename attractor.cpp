@@ -18,6 +18,12 @@ double triangleCPP(double x){
   return (x/(M_PI/2))-4;
 }
 
+// [[Rcpp::export]]
+double sawtoothCPP(double x){
+  x = fmod(12*M_PI+x,M_PI);
+  return (x/(M_PI));
+}
+
 
 
 // [[Rcpp::export]]
@@ -68,6 +74,30 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
         if(mutation==6){
           X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
           X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+        }
+        if(mutation==7){
+          X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
+          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]);
+        }
+        if(mutation==8){
+          X[0] = sin(p[1]*prev[1])+p[2]*sin(p[1]*prev[0]+M_PI/2);
+          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+        }
+        if(mutation==9){
+          X[0] = sin(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
+          X[1] = sin(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+        }
+        if(mutation==10){
+          X[0] = sawtoothCPP(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
+          X[1] = sawtoothCPP(p[0]*prev[0])+p[3]*sawtoothCPP(p[0]*prev[1]+M_PI/2);
+        }
+        if(mutation==11){
+          X[0] = sawtoothCPP(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
+          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+        }
+        if(mutation==12){
+          X[0] = sin(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
+          X[1] = sawtoothCPP(p[0]*prev[0])+p[3]*sawtoothCPP(p[0]*prev[1]+M_PI/2);
         }
         x = floor(xd * (X[0] - xlim[0]) );
         y = floor(yd * (X[1] - ylim[0]) );

@@ -32,23 +32,25 @@ george1 <-readRDS("george1.rds")
 
 pallist <- rownames(subset(brewer.pal.info, category=="seq"))
 
-for(i in 305:400){
+
+for(i in 2010:2200){
+set.seed(i)
 george1params <- round(c(runif(1,1,3),runif(1,1,3),runif(1,-2,2),runif(1,-2,2)),5)
 print(george1params)
-lims <- findLimits(george1params, funs = george2, startX=c(0.5,0.5))
+lims <- findLimits(george1params, funs = george3, startX=c(0.5,0.5))
 george1 <- imageAttractorCPP(startPos = c(0.5,0.5), 
-                             n = 4e8, res=2000, 
+                             n = 2e8, res=2000, 
                              p=george1params,
                              xlim=lims[[1]], ylim=lims[[2]],
-                             mutation=6)
+                             mutation=11)
 ramp <- colorRamp(brewer.pal(9, name = sample(pallist,1)))
 cimg1 <- makeImg(.995^george1, ramp)
-cimg1 <- draw_text(cimg1, text=sprintf("GS attractor: a=%0.5f, b=%0.5f, c=%0.5f, d=%0.5f",
+cimg1 <- implot(cimg1, expr=text(sprintf("Attractor 11: a=%0.5f, b=%0.5f, c=%0.5f, d=%0.5f",
           george1params[1],
           george1params[2],
           george1params[3],
-          george1params[4]), x = 20,y=20,fsize = 50, col="white")
-save.image(cimg1, file=sprintf("george%05d.png",i))
+          george1params[4]), x = 20,y=2000-30,cex = 2,pos=4, col=rgb(ramp(0.5)/255)))
+save.image(cimg1, file=sprintf("pngs/george_%d_%05d.png",mutation,i))
 gc()
 }
 
