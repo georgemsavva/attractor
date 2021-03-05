@@ -6,6 +6,29 @@ pickover <- function(prev, p){
   )
 }
 
+george14 <- function(prev, p){
+  c(
+    sin(p[2]*prev[2])+p[3]*cos(p[2]*prev[1])+p[5]*sin(prev[1]*p[7]),
+    sin(p[1]*prev[1])+p[4]*cos(p[1]*prev[2])+p[6]*sin(prev[2]*p[8])
+  )
+}
+george16 <- function(prev, p){
+  c(
+    p[7]*(sin(p[1]*prev[2])+cos(p[1]*prev[1])) + p[5]*(sin(p[2]*prev[2])+cos(p[2]*prev[1]))+ p[4]*(sin(p[3]*prev[2]+p[6])+cos(p[3]*prev[1]+p[6])),
+    p[7]*(sin(p[1]*prev[1])-cos(p[1]*prev[2])) + p[5]*(sin(p[2]*prev[1])-cos(p[2]*prev[2]))+ p[4]*(sin(p[3]*prev[1]+p[6])-cos(p[3]*prev[2]+p[6]))
+    
+  )
+}
+
+george15 <- function(prev, p){
+  c(
+    #X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]) - (prev[1]>0)*1;
+    #X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]) + (prev[0]<0)*1;
+    sin(p[2]*prev[2])+p[3]*cos(p[2]*prev[1])- (prev[2]>0)*1,
+    sin(p[1]*prev[1])+p[4]*cos(p[1]*prev[2])+ (prev[1]<0)*1
+  )
+}
+
 georgeM3 <- function(prev, p){
   c(
     # X[0] = abs(sin(p[1]*prev[1]))+pow(sin(p[1]*prev[0]),2);

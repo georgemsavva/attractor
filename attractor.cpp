@@ -99,6 +99,20 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
           X[0] = sin(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
           X[1] = sawtoothCPP(p[0]*prev[0])+p[3]*sawtoothCPP(p[0]*prev[1]+M_PI/2);
         }
+        if(mutation==14){
+          X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]) + p[4]*sin(p[6]*prev[0]);
+          X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]) + p[5]*sin(p[7]*prev[1]);
+        }
+        if(mutation==15){
+          X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]) - (prev[1]>0)*1;
+          X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]) + (prev[0]<0)*1;
+        }
+        if(mutation==16){
+    
+          X[0] = p[6]*(sin(p[0]*prev[1])+cos(p[0]*prev[0])) + p[4]*(sin(p[1]*prev[1])+cos(p[1]*prev[0]))+ p[3]*(sin(p[2]*prev[1]+p[5])+cos(p[2]*prev[0]+p[5]));
+          X[1] = p[6]*(sin(p[0]*prev[0])-cos(p[0]*prev[1])) + p[4]*(sin(p[1]*prev[0])-cos(p[1]*prev[1]))+ p[3]*(sin(p[2]*prev[0]+p[5])-cos(p[2]*prev[1]+p[5]));
+        }
+        
         x = floor(xd * (X[0] - xlim[0]) );
         y = floor(yd * (X[1] - ylim[0]) );
         if((x>0) & (x<res) & (y>0) & (y<res)) out(x,y) = out(x,y)+1  ;
