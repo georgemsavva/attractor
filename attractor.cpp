@@ -19,11 +19,114 @@ double triangleCPP(double x){
 }
 
 // [[Rcpp::export]]
+double triangleCPPCos(double x){
+  return triangleCPP(x+M_PI/2);
+}
+
+
+// [[Rcpp::export]]
 double sawtoothCPP(double x){
   x = fmod(12*M_PI+x,M_PI);
   return (x/(M_PI));
 }
 
+// [[Rcpp::export]]
+double sawCos(double x){
+  return (cos(fmod(x,M_PI)));
+}
+
+// [[Rcpp::export]]
+double sawSin(double x){
+  return (sin(fmod(x,M_PI)));
+}
+
+
+
+// [[Rcpp::export]]
+NumericVector iterate(NumericVector prev, NumericVector p, int mutation){
+  NumericVector X(2);
+  if(mutation==0){
+    X[0] = sin(p[1]*prev[1])+p[2]*sin(p[1]*prev[0]);
+    X[1] = sin(p[0]*prev[0])+p[3]*sin(p[0]*prev[1]);
+  }
+  if(mutation==1){
+    X[0] = sin(p[1]*prev[1])+pow(sin(p[1]*prev[0]),2)+pow(sin(p[1]*prev[0]),3);
+    X[1] = sin(p[0]*prev[0])+pow(sin(p[0]*prev[1]),2)+pow(sin(p[0]*prev[1]),3);
+  }
+  if(mutation==2){
+    X[0] = sin(p[1]*prev[1])+pow(sin(p[1]*prev[0]),2);
+    X[1] = sin(p[0]*prev[0])+pow(sin(p[0]*prev[1]),2);
+  }
+  if(mutation==3){
+    X[0] = abs(sin(p[1]*prev[1]))+pow(sin(p[1]*prev[0]),2);
+    X[1] = abs(sin(p[0]*prev[0]))+pow(sin(p[0]*prev[1]),2);
+  }
+  if(mutation==4){
+    X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]);
+    X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]);
+  }
+  if(mutation==5){
+    X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]);
+    X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]);
+  }
+  if(mutation==6){
+    X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
+    X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+  }
+  if(mutation==7){
+    X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
+    X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]);
+  }
+  if(mutation==8){
+    X[0] = sin(p[1]*prev[1])+p[2]*sin(p[1]*prev[0]+M_PI/2);
+    X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+  }
+  if(mutation==9){
+    X[0] = sin(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
+    X[1] = sin(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+  }
+  if(mutation==10){
+    X[0] = sawtoothCPP(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
+    X[1] = sawtoothCPP(p[0]*prev[0])+p[3]*sawtoothCPP(p[0]*prev[1]+M_PI/2);
+  }
+  if(mutation==11){
+    X[0] = sawtoothCPP(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
+    X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
+  }
+  if(mutation==12){
+    X[0] = sin(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
+    X[1] = sawtoothCPP(p[0]*prev[0])+p[3]*sawtoothCPP(p[0]*prev[1]+M_PI/2);
+  }
+  if(mutation==14){
+    X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]) + p[4]*sin(p[6]*prev[0]);
+    X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]) + p[5]*sin(p[7]*prev[1]);
+  }
+  if(mutation==15){
+    X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]) - (prev[1]>0)*1;
+    X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]) + (prev[0]<0)*1;
+  }
+  if(mutation==16){
+    
+    X[0] = p[6]*(sin(p[0]*prev[1])+cos(p[0]*prev[0])) + p[4]*(sin(p[1]*prev[1])+cos(p[1]*prev[0]))+ p[3]*(sin(p[2]*prev[1]+p[5])+cos(p[2]*prev[0]+p[5]));
+    X[1] = p[6]*(sin(p[0]*prev[0])-cos(p[0]*prev[1])) + p[4]*(sin(p[1]*prev[0])-cos(p[1]*prev[1]))+ p[3]*(sin(p[2]*prev[0]+p[5])-cos(p[2]*prev[1]+p[5]));
+  }
+  if(mutation==17){
+    X[0] = p[6]*(triangleCPP(p[0]*prev[1]+p[5])+sawtoothCPP(.5*(p[0]*prev[0]))) + p[4]*(sin(p[1]*prev[1])+cos(p[1]*prev[0]))+ p[3]*(sin(p[2]*prev[1]+p[5])+cos(p[2]*prev[0]+p[5]));
+    X[1] = p[6]*(triangleCPP(p[0]*prev[0]+p[5])-triangleCPPCos(p[0]*prev[1]+p[5])) + p[4]*(triangleCPP(p[1]*prev[0])-triangleCPPCos(p[1]*prev[1]+p[5]))+ p[3]*(triangleCPP(p[2]*prev[0]+p[5])-triangleCPPCos(p[2]*prev[1]+p[5]));
+    /*X[0] = p[6]*(sin(p[0]*prev[1])+cos(p[0]*prev[0])) + ;
+     X[1] = p[6]*(triangleCPP(p[0]*prev[0])-triangleCPPCos(p[0]*prev[1])) */
+  }
+  if(mutation==18){
+
+    X[0] = p[1]*sin(p[6]*(sin(p[0]*prev[1]+p[7])+cos(p[0]*prev[0]+p[7]))) ;
+    X[1] = p[1]*sin(p[6]*(sin(p[0]*prev[0]+p[7])-cos(p[0]*prev[1]+p[7]))) ;
+  }
+  if(mutation==19){
+    X[0] = p[1]*pow(sin(p[6]*(sin(p[0]*prev[1]+p[7])+cos(p[0]*prev[0]+p[7]))),3) ;
+    X[1] = -p[1]*pow(sin(p[6]*(sin(p[0]*prev[0]+p[7])-cos(p[0]*prev[1]+p[7]))),3) ;
+  }
+  return(X);
+}
 
 
 // [[Rcpp::export]]
@@ -46,73 +149,8 @@ NumericMatrix imageAttractorCPP(NumericVector startPos,NumericVector p,
       for(int i=0;i<n;i++){
         prev[0]=X[0];
         prev[1]=X[1];
-        if(i<20) Rprintf("x=%0.4f, y=%0.4f\n", prev[0], prev[1]);
-        if(mutation==0){
-          X[0] = sin(p[1]*prev[1])+p[2]*sin(p[1]*prev[0]);
-          X[1] = sin(p[0]*prev[0])+p[3]*sin(p[0]*prev[1]);
-        }
-        if(mutation==1){
-          X[0] = sin(p[1]*prev[1])+pow(sin(p[1]*prev[0]),2)+pow(sin(p[1]*prev[0]),3);
-          X[1] = sin(p[0]*prev[0])+pow(sin(p[0]*prev[1]),2)+pow(sin(p[0]*prev[1]),3);
-        }
-        if(mutation==2){
-          X[0] = sin(p[1]*prev[1])+pow(sin(p[1]*prev[0]),2);
-          X[1] = sin(p[0]*prev[0])+pow(sin(p[0]*prev[1]),2);
-        }
-        if(mutation==3){
-          X[0] = abs(sin(p[1]*prev[1]))+pow(sin(p[1]*prev[0]),2);
-          X[1] = abs(sin(p[0]*prev[0]))+pow(sin(p[0]*prev[1]),2);
-        }
-        if(mutation==4){
-          X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]);
-          X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]);
-        }
-        if(mutation==5){
-          X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]);
-          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]);
-        }
-        if(mutation==6){
-          X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
-          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
-        }
-        if(mutation==7){
-          X[0] = triangleCPP(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
-          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]);
-        }
-        if(mutation==8){
-          X[0] = sin(p[1]*prev[1])+p[2]*sin(p[1]*prev[0]+M_PI/2);
-          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
-        }
-        if(mutation==9){
-          X[0] = sin(p[1]*prev[1])+p[2]*triangleCPP(p[1]*prev[0]+M_PI/2);
-          X[1] = sin(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
-        }
-        if(mutation==10){
-          X[0] = sawtoothCPP(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
-          X[1] = sawtoothCPP(p[0]*prev[0])+p[3]*sawtoothCPP(p[0]*prev[1]+M_PI/2);
-        }
-        if(mutation==11){
-          X[0] = sawtoothCPP(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
-          X[1] = triangleCPP(p[0]*prev[0])+p[3]*triangleCPP(p[0]*prev[1]+M_PI/2);
-        }
-        if(mutation==12){
-          X[0] = sin(p[1]*prev[1])+p[2]*sawtoothCPP(p[1]*prev[0]+M_PI/2);
-          X[1] = sawtoothCPP(p[0]*prev[0])+p[3]*sawtoothCPP(p[0]*prev[1]+M_PI/2);
-        }
-        if(mutation==14){
-          X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]) + p[4]*sin(p[6]*prev[0]);
-          X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]) + p[5]*sin(p[7]*prev[1]);
-        }
-        if(mutation==15){
-          X[0] = sin(p[1]*prev[1])+p[2]*cos(p[1]*prev[0]) - (prev[1]>0)*1;
-          X[1] = sin(p[0]*prev[0])+p[3]*cos(p[0]*prev[1]) + (prev[0]<0)*1;
-        }
-        if(mutation==16){
-    
-          X[0] = p[6]*(sin(p[0]*prev[1])+cos(p[0]*prev[0])) + p[4]*(sin(p[1]*prev[1])+cos(p[1]*prev[0]))+ p[3]*(sin(p[2]*prev[1]+p[5])+cos(p[2]*prev[0]+p[5]));
-          X[1] = p[6]*(sin(p[0]*prev[0])-cos(p[0]*prev[1])) + p[4]*(sin(p[1]*prev[0])-cos(p[1]*prev[1]))+ p[3]*(sin(p[2]*prev[0]+p[5])-cos(p[2]*prev[1]+p[5]));
-        }
-        
+        if((i>10) & (i<15)) Rprintf("x=%0.4f, y=%0.4f\n", prev[0], prev[1]);
+        X = iterate(prev, p, mutation);
         x = floor(xd * (X[0] - xlim[0]) );
         y = floor(yd * (X[1] - ylim[0]) );
         if((x>0) & (x<res) & (y>0) & (y<res)) out(x,y) = out(x,y)+1  ;

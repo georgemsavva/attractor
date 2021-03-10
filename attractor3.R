@@ -103,18 +103,27 @@ lordsDreams <- list(c(-2.905148, -2.030427, 1.440550, 0.703070),
                     c(1.008118, 2.653920, 0.599124, 0.650700))
 kingsDream <- list(c(-0.966918, 2.879879, 0.765145, 0.744728))
 
-
-computeAttractor <- function(params,funs,n=1e4,startX){
+#NumericVector iterate(NumericVector prev, NumericVector p, int mutation)
+computeAttractor2 <- function(params,mutation,n=1e4,startX){
   X=matrix(NA, nrow=n, ncol=length(startX))
   X[1,] <- startX
   for(i in 2:n) {
-    X[i,] <- funs(prev=X[i-1,], params)
+    X[i,] <- iterate(prev=X[i-1,], p=params, mutation=mutation)
   }
   X
 }
 
 findLimits <- function(params, funs, n=1e4,startX, extend=0.1){
   att1 <- computeAttractor(params, funs, n=n, startX)
+  xlim <- c(min(att1[,1]), max(att1[,1]))
+  ylim <- c(min(att1[,2]), max(att1[,2]))
+  xlim <- xlim + c(-1,1)*(xlim[2]-xlim[1])*extend
+  ylim <- ylim + c(-1,1)*(ylim[2]-ylim[1])*extend
+  return(list(xlim,ylim))
+}
+
+findLimits2 <- function(params, mutation, n=1e4,startX, extend=0.1){
+  att1 <- computeAttractor2(params, mutation, n=n, startX)
   xlim <- c(min(att1[,1]), max(att1[,1]))
   ylim <- c(min(att1[,2]), max(att1[,2]))
   xlim <- xlim + c(-1,1)*(xlim[2]-xlim[1])*extend
